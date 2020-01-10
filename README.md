@@ -31,7 +31,6 @@ Other codes can be found in Older Files folder (anti spoofing codes and etc.).
     xlsxwriter
     pyttsx3
     playsound
-    imghdr
     imutils
 
     
