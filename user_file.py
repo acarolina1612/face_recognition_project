@@ -17,7 +17,7 @@ def thread_file(saudacao, info, result):  # create customer's file
 
     w = tk.Toplevel()
     icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-    icon_path = return_path(icon_path, 'faceicon.ico')
+    icon_path = return_path(icon_path, r'./Interface/faceicon.ico')
     w.iconbitmap(default=icon_path)
     w.wm_title('Ficha do usuário')
     w.geometry('600x600')
