@@ -1,0 +1,14 @@
+numpy==1.16.1
+pandas==0.24.2
+tensorflow==1.14.0
+setuptools==41.0.0
+keras==2.2.4
+opencv-python
+openpyxl
+xlrd
+sklearn
+xlsxwriter
+pillow
+pyttsx3
+playsound
+imutils

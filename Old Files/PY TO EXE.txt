@@ -1,0 +1,5 @@
+Com cmd
+pyinstaller --onefile --add-data "models;models" --icon=icons/faceicon.ico face_recog_Inaug.py
+
+Sem cmd
+pyinstaller --onefile --windowed --add-data "models;models" --icon=icons/faceicon.ico face_recog_Inaug.py
