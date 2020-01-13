@@ -4,7 +4,7 @@ from playsound import playsound
 from return_path import return_path
 
 
-def thread_voice(saudacao):  # say 'welcome' to the user
+def thread_voice(welcome_msg):  # say 'welcome' to the user
     audio_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
     audio_path = return_path(audio_path, 'audio3.mp3')
     playsound(audio_path)
@@ -15,5 +15,5 @@ def thread_voice(saudacao):  # say 'welcome' to the user
     volume = engine.getProperty('volume')
     engine.setProperty('volume', volume + 0.5)
     engine.setProperty('rate', 200)
-    engine.say(saudacao)
+    engine.say(welcome_msg)
     engine.runAndWait()

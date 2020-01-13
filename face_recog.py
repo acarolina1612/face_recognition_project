@@ -18,8 +18,16 @@ import Cadastro_de_pessoas.load_models as load_models
 from datetime import date
 from xlsxwriter.utility import xl_rowcol_to_cell
 from openpyxl import Workbook
+from Interface import Interface, loading_bar
+from tkinter import messagebox
+
+t_1 = threading.Thread(target=loading_bar.main)
+t_1.start()
 
 parser, args, FRGraph, aligner, extract_feature, face_detect = load_models.main()
+
+Interface.main()
+
 
 class Recog:
     def __init__(self, mode, new_name, image, turma):
@@ -252,13 +260,13 @@ class Recog:
                             print(result, ' foi salvo em ', filename)
                             frames = 1
 
-                            saudacao = '\n' + 'Bem vindo, ' + result + '!'
+                            welcome_msg = '\n' + 'Bem vindo, ' + result + '!'
                             info = 'Empresa: ' + empresa
 
-                            t2 = threading.Thread(target=welcome_voice.thread_voice, args=(saudacao,))
+                            t2 = threading.Thread(target=welcome_voice.thread_voice, args=(welcome_msg,))
                             t2.start()
 
-                            user_file.thread_file(saudacao, info, result)
+                            user_file.thread_file(welcome_msg, info, result)
                             result = 'Desconhecido'
 
                             continue

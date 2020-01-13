@@ -3,16 +3,9 @@ import sys
 import tkinter as tk
 import json
 import cv2
-import threading
-import face_recog
 from tkinter import ttk, messagebox
 from tkinter import filedialog
 from return_path import return_path
-from Interface import loading_bar
-
-t_1 = threading.Thread(target=loading_bar.main)
-t_1.start()
-
 
 NORM_FONT = ("Verdana", 10)
 LARGE_FONT = ("Verdana", 12)
@@ -58,13 +51,13 @@ class StartPage(tk.Frame):
 
         tk.Frame.__init__(self, parent)
 
-        insercaoERemocao = tk.Label(self, text='Cadastro/Remoção de usuários', width=0, height=0, padx=10, pady=12,
+        AddAndRemove = tk.Label(self, text='Cadastro/Remoção de usuários', width=0, height=0, padx=10, pady=12,
                                     font=LARGE_FONT)
-        insercaoERemocao.grid(row=0, column=0, stick='nsew')
-        insercaoERemocaoFrame = ttk.Frame(self, width=400, height=360, relief='raised')
-        insercaoERemocaoFrame.grid(row=1, column=0, sticky="nsew")
+        AddAndRemove.grid(row=0, column=0, stick='nsew')
+        AddAndRemoveFrame = ttk.Frame(self, width=400, height=360, relief='raised')
+        AddAndRemoveFrame.grid(row=1, column=0, sticky="nsew")
 
-        button = ttk.Button(insercaoERemocaoFrame, text="Adicionar usuário",
+        button = ttk.Button(AddAndRemoveFrame, text="Adicionar usuário",
                             command=lambda: controller.show_frame(PageOne))
         button.pack(padx=150, pady=100)
 
@@ -85,31 +78,31 @@ class StartPage(tk.Frame):
                 Nomes.append(key)
             f.close()
 
-            Nome = ttk.Combobox(popup, values=sorted(Nomes))
-            Nome.pack(pady=15, padx=20)
-            Nome.focus_set()
+            Name = ttk.Combobox(popup, values=sorted(Nomes))
+            Name.pack(pady=15, padx=20)
+            Name.focus_set()
 
             def next_step():
-                if Nome.get():
+                if Name.get():
                     # the user entered data in the mandatory entry: proceed to next step
                     f = open(r'./coordinates.txt', 'r')
                     data_set = json.loads(f.read())
-                    Nomes = []
+                    Names = []
 
                     for key, value in data_set.items():
                         Nomes.append(key)
                     f.close()
 
-                    RemoverNome = Nome.get()
+                    RemoveName = Name.get()
                     popup.destroy()
 
-                    Clear(RemoverNome)
+                    Clear(RemoveName)
                     messagebox.showinfo("Remover Usuário", "Usuário removido!")
 
                 else:
                     # the mandatory field is empty
                     messagebox.showinfo("Remover Usuário", "Selecione um usuário!")
-                    Nome.focus_set()
+                    Name.focus_set()
                     popup.destroy()
                     popupmsg(msg)
 
@@ -124,17 +117,17 @@ class StartPage(tk.Frame):
             popup.eval('tk::PlaceWindow . center')
             popup.mainloop()
 
-        button2 = ttk.Button(insercaoERemocaoFrame, text="Remover usuário",
+        button2 = ttk.Button(AddAndRemoveFrame, text="Remover usuário",
                              command=lambda: popupmsg("Selecione o nome do usuário que será removido"))
         button2.pack(padx=0, pady=10)
 
-        ReconhecimentoUsuarios = tk.Label(self, text='Reconhecimento de usuários', width=0, height=0, padx=10, pady=12,
+        RecogUser = tk.Label(self, text='Reconhecimento de usuários', width=0, height=0, padx=10, pady=12,
                                           font=LARGE_FONT)
-        ReconhecimentoUsuarios.grid(row=0, column=1, stick='nsew')
-        ReconhecimentoUsuariosFrame = ttk.Frame(self, width=400, height=360, relief='raised')
-        ReconhecimentoUsuariosFrame.grid(row=1, column=1, sticky="nsew")
+        RecogUser.grid(row=0, column=1, stick='nsew')
+        RecogUserFrame = ttk.Frame(self, width=400, height=360, relief='raised')
+        RecogUserFrame.grid(row=1, column=1, sticky="nsew")
 
-        button3 = ttk.Button(ReconhecimentoUsuariosFrame, text="Reconhecer usuário",
+        button3 = ttk.Button(RecogUserFrame, text="Reconhecer usuário",
                              command=lambda: face_recog.Recog("camera", "", "", ""))
         button3.pack(padx=150, pady=165)
 
@@ -147,28 +140,28 @@ class PageOne(tk.Frame):
         bframe = tk.Frame(self)
         cframe = tk.Frame(self)
 
-        Nome = tk.Label(bframe, text="Nome e sobrenome", width=0, height=0, padx=40, pady=50,
+        Name = tk.Label(bframe, text="Nome e sobrenome", width=0, height=0, padx=40, pady=50,
                         font=LARGE_FONT)
-        Nome.grid(row=0, column=0, stick='nsew')
-        NomeFrame = ttk.Frame(bframe, width=600, height=360)
-        NomeFrame.grid(row=1, column=0)
+        Name.grid(row=0, column=0, stick='nsew')
+        NameFrame = ttk.Frame(bframe, width=600, height=360)
+        NameFrame.grid(row=1, column=0)
 
-        NomeFunc = tk.Entry(NomeFrame)
-        NomeFunc.pack(pady=10, padx=10)
-        NomeFunc.focus_set()
+        NameFunc = tk.Entry(NameFrame)
+        NameFunc.pack(pady=10, padx=10)
+        NameFunc.focus_set()
 
-        Turma = tk.Label(bframe, text="Empresa", width=0, height=0, padx=10, pady=30,
+        Company = tk.Label(bframe, text="Empresa", width=0, height=0, padx=10, pady=30,
                          font=LARGE_FONT)
-        Turma.grid(row=3, column=0, stick='nsew')
-        TurmaFrame = ttk.Frame(bframe, width=400, height=360)
-        TurmaFrame.grid(row=4, column=0)
+        Company.grid(row=3, column=0, stick='nsew')
+        CompanyFrame = ttk.Frame(bframe, width=400, height=360)
+        CompanyFrame.grid(row=4, column=0)
 
-        Combo = ttk.Combobox(TurmaFrame, values=["ICA", "PUC-Rio", "Externo"])
+        Combo = ttk.Combobox(CompanyFrame, values=["ICA", "PUC-Rio", "Externo"])
         Combo.set("ICA")
         Combo.pack(pady=10, padx=10)
         Combo.focus_set()
 
-        def add_pic(new_name, turma):
+        def add_pic(company):
             path = filedialog.askopenfile(title='Selecione a foto',
                                           filetypes=[('Image Files', ['.jpeg', '.jpg', '.JPG', '.png', '.gif',
                                                                       '.tiff', '.tif', '.bmp'])])
@@ -179,19 +172,19 @@ class PageOne(tk.Frame):
             else:
                 im = cv2.imread(path.name)
                 # cv2.imshow('Foto', im)
-                face_recog.Recog.create_manual_data("", "", path.name, im, turma)
+                face_recog.Recog.create_manual_data("", "", path.name, im, company)
                 controller.show_frame(StartPage)
 
-        def add_manual(new_name, turma):
-            face_recog.Recog.create_manual_data("", "input", new_name, "", turma)
+        def add_manual(new_name, company):
+            face_recog.Recog.create_manual_data("", "input", new_name, "", company)
             controller.show_frame(StartPage)
 
         def next_step():
-            if NomeFunc.get():
+            if NameFunc.get():
                 # the user entered data in the mandatory entry: proceed to next step
-                new_name = NomeFunc.get()
-                NomeFunc.delete(0, 'end')
-                turma = Combo.get()
+                new_name = NameFunc.get()
+                NameFunc.delete(0, 'end')
+                company = Combo.get()
 
                 # add person in dataset
                 popup2 = tk.Tk()
@@ -204,11 +197,11 @@ class PageOne(tk.Frame):
                 frm = tk.Frame(popup2, borderwidth=1)
 
                 B1 = ttk.Button(frm, text="Inserir foto",
-                                command=lambda: [add_pic(new_name, turma), popup2.destroy()])
+                                command=lambda: [add_pic(company), popup2.destroy()])
                 B1.pack(side='left')
 
                 B2 = ttk.Button(frm, text="Pegar coordenadas",
-                                command=lambda: [add_manual(new_name, turma), popup2.destroy()])
+                                command=lambda: [add_manual(new_name, company), popup2.destroy()])
                 B2.pack(side='right')
 
                 frm.pack(side='bottom', pady='15')
@@ -220,14 +213,14 @@ class PageOne(tk.Frame):
             else:
                 # the mandatory field is empty
                 messagebox.showinfo("Adicionar Usuário", "Escreva o nome do usuário!")
-                NomeFunc.focus_set()
+                NameFunc.focus_set()
 
-        Ok = ttk.Button(TurmaFrame, text='OK', command=lambda: next_step())
+        Ok = ttk.Button(CompanyFrame, text='OK', command=lambda: next_step())
         Ok.pack(sid='left')
 
-        Cancelar = ttk.Button(TurmaFrame, text='Cancelar',
-                              command=lambda: [controller.show_frame(StartPage), NomeFunc.delete(0, 'end')])
-        Cancelar.pack(side='left')
+        Cancel = ttk.Button(CompanyFrame, text='Cancelar',
+                              command=lambda: [controller.show_frame(StartPage), NameFunc.delete(0, 'end')])
+        Cancel.pack(side='left')
 
         bframe.pack(side='left')
 
@@ -241,8 +234,8 @@ class PageOne(tk.Frame):
 
 
 class Clear:  # clear the person and its coordinates from the txt
-    def __init__(self, RemoverNome):
-        self.RemoverNome = RemoverNome
+    def __init__(self, RemoveName):
+        self.RemoveName = RemoveName
 
         f = open(r'./coordinates.txt', 'r')  # read
         g = open(r'./coordinates_new.txt', 'w')  # write
@@ -251,8 +244,8 @@ class Clear:  # clear the person and its coordinates from the txt
             with f as source_file:
                 for line in source_file:
                     element = json.loads(line.strip())
-                    if RemoverNome in element:
-                        del element[RemoverNome]
+                    if RemoveName in element:
+                        del element[RemoveName]
                     dest_file.write(json.dumps(element))
         f.close()
         g.close()
@@ -260,8 +253,11 @@ class Clear:  # clear the person and its coordinates from the txt
         os.remove(r'./coordinates.txt')
         os.rename(r'./coordinates_new.txt', r'./coordinates.txt')
 
+def main():
+    app = App()
+    app.eval('tk::PlaceWindow . center')
+    app.mainloop()
+    app.bind('<Escape>', sys.exit())
 
-app = App()
-app.eval('tk::PlaceWindow . center')
-app.mainloop()
-app.bind('<Escape>', sys.exit())
+if __name__ == '__main__':
+    main()

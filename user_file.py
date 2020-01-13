@@ -6,7 +6,7 @@ from PIL import ImageTk
 from return_path import return_path
 
 
-def thread_file(saudacao, info, result):  # create customer's file
+def thread_file(welcome_msg, info, result):  # create customer's file
     path = r'./imgs'
 
     now = datetime.datetime.now()
@@ -35,7 +35,7 @@ def thread_file(saudacao, info, result):  # create customer's file
     w2 = tk.Label(label_right, image=logo, width=450, height=450, relief='sunken').pack(
         side="bottom")
     w3 = tk.Label(label_right,
-                  text=saudacao,
+                  text=welcome_msg,
                   font=('Helvetica', 20)).pack(side='top')
     label_right.pack(anchor='center')
     w.update()
