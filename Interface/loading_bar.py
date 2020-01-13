@@ -46,7 +46,6 @@ class LoadBar(Frame):
 
 def run():
     root = Tk()
-    root.eval('tk::PlaceWindow . center')
     c = LoadBar(root)
     c.pack()
     root.mainloop()

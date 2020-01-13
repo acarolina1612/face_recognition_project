@@ -5,7 +5,6 @@ import json
 import cv2
 from tkinter import ttk, messagebox
 from tkinter import filedialog
-from return_path import return_path
 
 NORM_FONT = ("Verdana", 10)
 LARGE_FONT = ("Verdana", 12)
@@ -17,10 +16,7 @@ class App(tk.Tk):
     def __init__(self, *args, **kwargs):  # arguments and keyword arguments
         tk.Tk.__init__(self, *args, **kwargs)
 
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-        icon_path = return_path(icon_path, r'./Interface/faceicon.ico')
-
-        tk.Tk.iconbitmap(self, default=icon_path)
+        # tk.Tk.iconbitmap(self, default='faceicon.ico')
         tk.Tk.wm_title(self, "Reconhecimento facial")
 
         self.geometry("800x400")
@@ -52,7 +48,7 @@ class StartPage(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         AddAndRemove = tk.Label(self, text='Cadastro/Remoção de usuários', width=0, height=0, padx=10, pady=12,
-                                    font=LARGE_FONT)
+                                font=LARGE_FONT)
         AddAndRemove.grid(row=0, column=0, stick='nsew')
         AddAndRemoveFrame = ttk.Frame(self, width=400, height=360, relief='raised')
         AddAndRemoveFrame.grid(row=1, column=0, sticky="nsew")
@@ -122,7 +118,7 @@ class StartPage(tk.Frame):
         button2.pack(padx=0, pady=10)
 
         RecogUser = tk.Label(self, text='Reconhecimento de usuários', width=0, height=0, padx=10, pady=12,
-                                          font=LARGE_FONT)
+                             font=LARGE_FONT)
         RecogUser.grid(row=0, column=1, stick='nsew')
         RecogUserFrame = ttk.Frame(self, width=400, height=360, relief='raised')
         RecogUserFrame.grid(row=1, column=1, sticky="nsew")
@@ -151,7 +147,7 @@ class PageOne(tk.Frame):
         NameFunc.focus_set()
 
         Company = tk.Label(bframe, text="Empresa", width=0, height=0, padx=10, pady=30,
-                         font=LARGE_FONT)
+                           font=LARGE_FONT)
         Company.grid(row=3, column=0, stick='nsew')
         CompanyFrame = ttk.Frame(bframe, width=400, height=360)
         CompanyFrame.grid(row=4, column=0)
@@ -219,7 +215,7 @@ class PageOne(tk.Frame):
         Ok.pack(sid='left')
 
         Cancel = ttk.Button(CompanyFrame, text='Cancelar',
-                              command=lambda: [controller.show_frame(StartPage), NameFunc.delete(0, 'end')])
+                            command=lambda: [controller.show_frame(StartPage), NameFunc.delete(0, 'end')])
         Cancel.pack(side='left')
 
         bframe.pack(side='left')
@@ -253,11 +249,13 @@ class Clear:  # clear the person and its coordinates from the txt
         os.remove(r'./coordinates.txt')
         os.rename(r'./coordinates_new.txt', r'./coordinates.txt')
 
+
 def main():
     app = App()
     app.eval('tk::PlaceWindow . center')
     app.mainloop()
     app.bind('<Escape>', sys.exit())
+
 
 if __name__ == '__main__':
     main()
