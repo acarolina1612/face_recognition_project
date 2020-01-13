@@ -30,19 +30,19 @@ Interface.main()
 
 
 class Recog:
-    def __init__(self, mode, new_name, image, turma):
+    def __init__(self, mode, new_name, image, company):
         self.mode = mode
         self.new_name = new_name
-        self.turma = turma
+        self.company = company
 
         if (self.mode == "camera"):
             self.camera_recog()
         elif (self.mode == "input"):
-            self.create_manual_data(mode, new_name, image, turma)
+            self.create_manual_data(mode, new_name, image, company)
         else:
             raise ValueError("Unimplemented mode")
 
-    def create_manual_data(self, mode, new_name, image, turma):
+    def create_manual_data(self, mode, new_name, image, company):
 
         f = open(r'./coordinates.txt', 'r')
         data_set = json.loads(f.read())
@@ -94,7 +94,7 @@ class Recog:
                     person_features[pos] = [
                         np.mean(extract_feature.get_features(person_imgs[pos]), axis=0).tolist()]
                 data_set[new_name] = person_features
-                data_set[new_name]["Class"] = [turma]
+                data_set[new_name]["Class"] = [company]
                 f = open(r'./coordinates.txt', 'w')
                 f.write(json.dumps(data_set))
                 f.close()
@@ -130,7 +130,7 @@ class Recog:
                 person_features[pos] = [
                     np.mean(extract_feature.get_features(person_imgs[pos]), axis=0).tolist()]
             data_set[new_name] = person_features
-            data_set[new_name]["Class"] = [turma]
+            data_set[new_name]["Class"] = [company]
             f = open(r'./coordinates.txt', 'w')
             f.write(json.dumps(data_set))
             f.close()
@@ -138,7 +138,7 @@ class Recog:
 
     def camera_recog(self):
 
-        global empresa, result, recog_data
+        global workplace, result, recog_data
         filename = 'Presenca.xlsx'
         presence_path = r'./'+filename
 
@@ -147,22 +147,22 @@ class Recog:
 
             now = datetime.datetime.now()
             today = date.today()
-            data = today.strftime("%d/%m/%y")
-            mes = now.strftime('%m')
-            dia = now.strftime('%d')
+            today_date = today.strftime("%d/%m/%y")
+            month = now.strftime('%m')
+            day = now.strftime('%d')
 
-            if dia + '_' + mes in wb.sheetnames:
-                ws = wb.get_sheet_by_name(dia + '_' + mes)
+            if day + '_' + month in wb.sheetnames:
+                ws = wb.get_sheet_by_name(day + '_' + month)
                 ws.cell(column=1, row=1, value='Nome')
-                ws.cell(column=2, row=1, value=data)
+                ws.cell(column=2, row=1, value=today_date)
                 ws.cell(column=3, row=1, value='Hora')
                 ws.cell(column=4, row=1, value='Empresa')
                 wb.save(presence_path)
             else:
-                wb.create_sheet(dia + '_' + mes, 0)
+                wb.create_sheet(day + '_' + month, 0)
                 ws = wb.active
                 ws.cell(column=1, row=1, value='Nome')
-                ws.cell(column=2, row=1, value=data)
+                ws.cell(column=2, row=1, value=today_date)
                 ws.cell(column=3, row=1, value='Hora')
                 ws.cell(column=4, row=1, value='Empresa')
                 wb.save(presence_path)
@@ -173,15 +173,15 @@ class Recog:
 
             now = datetime.datetime.now()
             today = date.today()
-            data = today.strftime("%d/%m/%y")
-            mes = now.strftime('%m')
-            dia = now.strftime('%d')
-            wb.create_sheet(dia + '_' + mes, 0)
+            today_date = today.strftime("%d/%m/%y")
+            month = now.strftime('%m')
+            day = now.strftime('%d')
+            wb.create_sheet(day + '_' + month, 0)
             std = wb.get_sheet_by_name('Sheet')
             wb.remove_sheet(std)
             ws = wb.active
             ws.cell(column=1, row=1, value='Nome')
-            ws.cell(column=2, row=1, value=data)
+            ws.cell(column=2, row=1, value=today_date)
             ws.cell(column=3, row=1, value='Hora')
             ws.cell(column=4, row=1, value='Empresa')
             wb.save(presence_path)
@@ -193,10 +193,10 @@ class Recog:
         while True:
 
             now = datetime.datetime.now()
-            mes = now.strftime('%m')
-            dia = now.strftime('%d')
-            hora = now.strftime("%H")
-            minutos = now.strftime("%M")
+            month = now.strftime('%m')
+            day = now.strftime('%d')
+            hour = now.strftime("%H")
+            minutes = now.strftime("%M")
 
             _, frame = vs.read()
 
@@ -213,8 +213,8 @@ class Recog:
                     print("Align face failed")  # log
             if len(aligns) > 0:
                 features_arr = extract_feature.get_features(aligns)
-                recog_data, turma = Recog.findPeople(features_arr, positions)  # receive people's coordinates and class
-                empresa = turma[0]
+                recog_data, company = Recog.findPeople(features_arr, positions)  # receive people's coordinates and class
+                workplace = company[0]
 
                 for (i, rect) in enumerate(rects):
                     cv2.rectangle(frame, (rect[0], rect[1]), (rect[2], rect[3]), (255, 0, 0), 2)  # draw bounding
@@ -229,7 +229,7 @@ class Recog:
 
             if result != 'Desconhecido' and frames <= 5:
                 for sh in xlrd.open_workbook(myPath).sheets():
-                    if sh.name == dia + '_' + mes:  # when the search is in today's sheet, find the person
+                    if sh.name == day + '_' + month:  # when the search is in today's sheet, find the person
                         times_found, cell_found, column, row = Recog.findSpecificPerson(sh, result)
 
                         frames += 1
@@ -241,27 +241,27 @@ class Recog:
                             if times_found < 2:
                                 ws.cell(column=1, row=ws.max_row + 1, value=result)
                                 ws.cell(column=2, row=ws.max_row, value='Presente')
-                                ws.cell(column=3, row=ws.max_row, value=hora + ':' + minutos)
-                                ws.cell(column=4, row=ws.max_row, value=empresa)
+                                ws.cell(column=3, row=ws.max_row, value=hour + ':' + minutes)
+                                ws.cell(column=4, row=ws.max_row, value=workplace)
                                 wb.save(presence_path)
 
                             else:  # found more than 2 times, person is leaving
                                 ws.cell(column=column + 1, row=row + 1, value=result)
                                 ws.cell(column=column + 2, row=row + 1, value='Presente')
-                                ws.cell(column=column + 3, row=row + 1, value=hora + ':' + minutos)
-                                ws.cell(column=column + 4, row=row + 1, value=empresa)
+                                ws.cell(column=column + 3, row=row + 1, value=hour + ':' + minutes)
+                                ws.cell(column=column + 4, row=row + 1, value=workplace)
                                 wb.save(presence_path)
 
                             path = r'./imgs'
 
                             cv2.imwrite(os.path.join(path,
-                                                     '%s' % result + '_' + '%s' % dia + '_' + '%s' % mes + '_' + '%s' % hora
-                                                     + 'h' + '%s' % minutos + '.jpg'), frame)
+                                                     '%s' % result + '_' + '%s' % day + '_' + '%s' % month + '_' + '%s' % hour
+                                                     + 'h' + '%s' % minutes + '.jpg'), frame)
                             print(result, ' foi salvo em ', filename)
                             frames = 1
 
                             welcome_msg = '\n' + 'Bem vindo, ' + result + '!'
-                            info = 'Empresa: ' + empresa
+                            info = 'Empresa: ' + workplace
 
                             t2 = threading.Thread(target=welcome_voice.thread_voice, args=(welcome_msg,))
                             t2.start()
@@ -308,7 +308,7 @@ class Recog:
         returnRes = []
 
         for (i, features_128D) in enumerate(features_arr):
-            global result, turma
+            global result, company
 
             smallest = sys.maxsize
             for person in data_set.keys():
@@ -318,7 +318,7 @@ class Recog:
                     if distance < smallest:
                         smallest = distance
                         result = person
-                        turma = data_set[person]["Class"]
+                        company = data_set[person]["Class"]
 
             percentage = min(100, 100 * thres / smallest)
 
@@ -327,4 +327,4 @@ class Recog:
             round_percent = round(percentage)  # round recognize percentage to nearest integer
             returnRes.append((result, round_percent))
 
-        return returnRes, turma
+        return returnRes, company
