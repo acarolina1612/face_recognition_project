@@ -1,11 +1,10 @@
 import sys
-import os
 import tkinter as tk
 import json
 import cv2
 import threading
 from Interface import loading_bar
-from Cadastro_de_pessoas import clear_person
+from Cadastro_de_pessoas import add_person, remove_person
 from Etapa_de_reconhecimento import load_models, recog_person
 from tkinter import ttk, messagebox
 from tkinter import filedialog
@@ -104,7 +103,7 @@ class StartPage(tk.Frame):
                     RemoveName = Name.get()
                     popup.destroy()
 
-                    clear_person.Clear(RemoveName)
+                    remove_person.Clear(RemoveName)
                     messagebox.showinfo("Remover Usuário", "Usuário removido!")
 
                 else:
@@ -136,7 +135,7 @@ class StartPage(tk.Frame):
         RecogUserFrame.grid(row=1, column=1, sticky="nsew")
 
         button3 = ttk.Button(RecogUserFrame, text="Reconhecer usuário",
-                             command=lambda: recog_person.Recog("camera", "", "", "", parser, args, FRGraph, aligner,
+                             command=lambda: recog_person.Recog.camera_recog("", aligner,
                                                                 extract_feature, face_detect))
         button3.pack(padx=150, pady=165)
 
@@ -181,13 +180,11 @@ class PageOne(tk.Frame):
             else:
                 im = cv2.imread(path.name)
                 # cv2.imshow('Foto', im)
-                recog_person.Recog.create_manual_data("", "", path.name, im, company, parser, args, FRGraph, aligner,
-                                                      extract_feature, face_detect)
+                add_person.AddUser.create_manual_data("", path.name, im, company, aligner, extract_feature, face_detect)
                 controller.show_frame(StartPage)
 
         def add_manual(new_name, company):
-            recog_person.Recog.create_manual_data("", "input", new_name, "", company, parser, args, FRGraph, aligner,
-                                                  extract_feature, face_detect)
+            add_person.AddUser.create_manual_data("", new_name, "", company, aligner, extract_feature, face_detect)
             controller.show_frame(StartPage)
 
         def next_step():
