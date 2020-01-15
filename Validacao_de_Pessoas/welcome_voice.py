@@ -1,12 +1,12 @@
 import os
 import pyttsx3
 from playsound import playsound
-from return_path import return_path
 
 
 def thread_voice(welcome_msg):  # say 'welcome' to the user
-    audio_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-    audio_path = return_path(audio_path, 'audio3.mp3')
+    audio = '/audio3.mp3'
+    audio_path = os.path.dirname(os.path.abspath(__file__))
+    audio_path = audio_path + audio
     playsound(audio_path)
     engine = pyttsx3.init()
     # set portuguese language

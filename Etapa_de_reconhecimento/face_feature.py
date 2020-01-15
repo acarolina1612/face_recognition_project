@@ -1,5 +1,5 @@
 import tensorflow as tf
-from architecture import inception_resnet_v1 as resnet
+from Etapa_de_reconhecimento.architecture import inception_resnet_v1 as resnet
 from tensorflow.python.platform import gfile
 import numpy as np
 import os

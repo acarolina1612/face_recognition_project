@@ -1,6 +1,6 @@
 import threading
 import os
-from return_path import return_path
+from Etapa_de_reconhecimento.return_path import return_path
 from tkinter import Tk, ttk, Frame
 
 

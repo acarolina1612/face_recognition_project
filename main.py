@@ -1,10 +1,19 @@
-import os
 import sys
+import os
 import tkinter as tk
 import json
 import cv2
+import threading
+from Interface import loading_bar
+from Cadastro_de_pessoas import clear_person
+from Etapa_de_reconhecimento import load_models, recog_person
 from tkinter import ttk, messagebox
 from tkinter import filedialog
+
+t_1 = threading.Thread(target=loading_bar.main)
+t_1.start()
+
+parser, args, FRGraph, aligner, extract_feature, face_detect = load_models.main()
 
 NORM_FONT = ("Verdana", 10)
 LARGE_FONT = ("Verdana", 12)
@@ -16,7 +25,6 @@ class App(tk.Tk):
     def __init__(self, *args, **kwargs):  # arguments and keyword arguments
         tk.Tk.__init__(self, *args, **kwargs)
 
-        # tk.Tk.iconbitmap(self, default='faceicon.ico')
         tk.Tk.wm_title(self, "Reconhecimento facial")
 
         self.geometry("800x400")
@@ -66,33 +74,37 @@ class StartPage(tk.Frame):
 
             frm = tk.Frame(popup, borderwidth=1)
 
-            f = open(r'./coordinates.txt', 'r')
+            filename = 'coordinates.txt'
+
+            coordinates_path = r'./Etapa_de_reconhecimento/' + filename
+
+            f = open(coordinates_path, 'r')
             data_set = json.loads(f.read())
-            Nomes = []
+            Names = []
 
             for key, value in data_set.items():
-                Nomes.append(key)
+                Names.append(key)
             f.close()
 
-            Name = ttk.Combobox(popup, values=sorted(Nomes))
+            Name = ttk.Combobox(popup, values=sorted(Names))
             Name.pack(pady=15, padx=20)
             Name.focus_set()
 
             def next_step():
                 if Name.get():
                     # the user entered data in the mandatory entry: proceed to next step
-                    f = open(r'./coordinates.txt', 'r')
+                    f = open(coordinates_path, 'r')
                     data_set = json.loads(f.read())
                     Names = []
 
                     for key, value in data_set.items():
-                        Nomes.append(key)
+                        Names.append(key)
                     f.close()
 
                     RemoveName = Name.get()
                     popup.destroy()
 
-                    Clear(RemoveName)
+                    clear_person.Clear(RemoveName)
                     messagebox.showinfo("Remover Usuário", "Usuário removido!")
 
                 else:
@@ -124,7 +136,8 @@ class StartPage(tk.Frame):
         RecogUserFrame.grid(row=1, column=1, sticky="nsew")
 
         button3 = ttk.Button(RecogUserFrame, text="Reconhecer usuário",
-                             command=lambda: face_recog.Recog("camera", "", "", ""))
+                             command=lambda: recog_person.Recog("camera", "", "", "", parser, args, FRGraph, aligner,
+                                                                extract_feature, face_detect))
         button3.pack(padx=150, pady=165)
 
 
@@ -168,11 +181,13 @@ class PageOne(tk.Frame):
             else:
                 im = cv2.imread(path.name)
                 # cv2.imshow('Foto', im)
-                face_recog.Recog.create_manual_data("", "", path.name, im, company)
+                recog_person.Recog.create_manual_data("", "", path.name, im, company, parser, args, FRGraph, aligner,
+                                                      extract_feature, face_detect)
                 controller.show_frame(StartPage)
 
         def add_manual(new_name, company):
-            face_recog.Recog.create_manual_data("", "input", new_name, "", company)
+            recog_person.Recog.create_manual_data("", "input", new_name, "", company, parser, args, FRGraph, aligner,
+                                                  extract_feature, face_detect)
             controller.show_frame(StartPage)
 
         def next_step():
@@ -227,27 +242,6 @@ class PageOne(tk.Frame):
         AdicionarUsuarioFrame.grid(row=1, column=3, padx=50)
 
         cframe.pack(side='right')
-
-
-class Clear:  # clear the person and its coordinates from the txt
-    def __init__(self, RemoveName):
-        self.RemoveName = RemoveName
-
-        f = open(r'./coordinates.txt', 'r')  # read
-        g = open(r'./coordinates_new.txt', 'w')  # write
-
-        with g as dest_file:
-            with f as source_file:
-                for line in source_file:
-                    element = json.loads(line.strip())
-                    if RemoveName in element:
-                        del element[RemoveName]
-                    dest_file.write(json.dumps(element))
-        f.close()
-        g.close()
-
-        os.remove(r'./coordinates.txt')
-        os.rename(r'./coordinates_new.txt', r'./coordinates.txt')
 
 
 def main():

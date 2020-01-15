@@ -1,9 +1,9 @@
 import argparse
 import sys
-from tf_graph import FaceRecGraph
-from align_custom import AlignCustom
-from face_feature import FaceFeature
-from mtcnn_detect import MTCNNDetect
+from Etapa_de_reconhecimento.tf_graph import FaceRecGraph
+from Etapa_de_reconhecimento.align_custom import AlignCustom
+from Etapa_de_reconhecimento.face_feature import FaceFeature
+from Etapa_de_reconhecimento.mtcnn_detect import MTCNNDetect
 
 
 def main():

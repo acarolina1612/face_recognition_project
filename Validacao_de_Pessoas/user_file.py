@@ -3,11 +3,12 @@ import time
 import datetime
 import tkinter as tk
 from PIL import ImageTk
-from return_path import return_path
 
 
 def thread_file(welcome_msg, info, result):  # create customer's file
-    path = r'./imgs'
+    path = os.path.abspath(os.pardir)  # get the parent folder path. In this case is
+    # face_recognition_project
+    path = path + '\\face_recognition_project\\Validacao_de_Pessoas\\imgs'
 
     now = datetime.datetime.now()
     month = now.strftime('%m')
@@ -16,13 +17,15 @@ def thread_file(welcome_msg, info, result):  # create customer's file
     minutes = now.strftime("%M")
 
     w = tk.Toplevel()
-    icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-    icon_path = return_path(icon_path, r'./Interface/faceicon.ico')
+    icon = 'faceicon.ico'
+    icon_path = os.path.abspath(os.pardir)  # get the parent folder path. In this case is
+    # face_recognition_project
+    icon_path = icon_path + '\\face_recognition_project\\Interface\\' + icon
     w.iconbitmap(default=icon_path)
     w.wm_title('Ficha do usuário')
     w.geometry('600x600')
     w.resizable(0, 0)
-    logo = ImageTk.PhotoImage(file=path + '/' + '%s' % result + '_' + '%s' % day + '_' +
+    logo = ImageTk.PhotoImage(file=path + '\\' + '%s' % result + '_' + '%s' % day + '_' +
                                    '%s' % month + '_' + '%s' % hour
                                    + 'h' + '%s' % minutes + '.jpg')
 

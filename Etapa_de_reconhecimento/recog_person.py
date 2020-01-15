@@ -12,39 +12,35 @@ import ntpath
 import copy
 import re
 import threading
-import user_file
-import welcome_voice
-import Cadastro_de_pessoas.load_models as load_models
+from Validacao_de_Pessoas import user_file, welcome_voice
 from datetime import date
 from xlsxwriter.utility import xl_rowcol_to_cell
 from openpyxl import Workbook
-from Interface import Interface, loading_bar
 from tkinter import messagebox
-
-t_1 = threading.Thread(target=loading_bar.main)
-t_1.start()
-
-parser, args, FRGraph, aligner, extract_feature, face_detect = load_models.main()
-
-Interface.main()
 
 
 class Recog:
-    def __init__(self, mode, new_name, image, company):
+    def __init__(self, mode, new_name, image, company, parser, args, FRGraph, aligner, extract_feature, face_detect):
         self.mode = mode
         self.new_name = new_name
         self.company = company
 
-        if (self.mode == "camera"):
-            self.camera_recog()
-        elif (self.mode == "input"):
+        if self.mode == "camera":
+            self.camera_recog(parser, args, FRGraph, aligner, extract_feature, face_detect)
+        elif self.mode == "input":
             self.create_manual_data(mode, new_name, image, company)
         else:
             raise ValueError("Unimplemented mode")
 
-    def create_manual_data(self, mode, new_name, image, company):
+    def create_manual_data(self, mode, new_name, image, company, parser, args, FRGraph, aligner, extract_feature,
+                           face_detect):
+        filename = 'coordinates.txt'
 
-        f = open(r'./coordinates.txt', 'r')
+        coordinates_path = os.path.abspath(os.pardir)  # get the parent folder path. In this case is
+        # face_recognition_project
+        coordinates_path = coordinates_path + '\\face_recognition_project\\Etapa_de_reconhecimento\\' + filename
+
+        f = open(coordinates_path, 'r')
         data_set = json.loads(f.read())
         person_imgs = {"Left": [], "Right": [], "Center": []}
         person_features = {"Left": [], "Right": [], "Center": [], "Class": []}
@@ -90,12 +86,12 @@ class Recog:
                         if len(aligned_frame) == 160 and len(aligned_frame[0]) == 160:
                             person_imgs[pos].append(aligned_frame)
 
-                for pos in person_imgs:  # there r some exceptions here, but I'll just leave it as this to keep it simple
+                for pos in person_imgs:
                     person_features[pos] = [
                         np.mean(extract_feature.get_features(person_imgs[pos]), axis=0).tolist()]
                 data_set[new_name] = person_features
                 data_set[new_name]["Class"] = [company]
-                f = open(r'./coordinates.txt', 'w')
+                f = open(coordinates_path, 'w')
                 f.write(json.dumps(data_set))
                 f.close()
                 cv2.destroyAllWindows()
@@ -131,16 +127,19 @@ class Recog:
                     np.mean(extract_feature.get_features(person_imgs[pos]), axis=0).tolist()]
             data_set[new_name] = person_features
             data_set[new_name]["Class"] = [company]
-            f = open(r'./coordinates.txt', 'w')
+            f = open(coordinates_path, 'w')
             f.write(json.dumps(data_set))
             f.close()
             messagebox.showinfo("Adicionar Usuário", "Usuário adicionado!")
 
-    def camera_recog(self):
+    def camera_recog(self, parser, args, FRGraph, aligner, extract_feature, face_detect):
 
         global workplace, result, recog_data
-        filename = 'Presenca.xlsx'
-        presence_path = r'./'+filename
+        presence_list = 'Presenca.xlsx'
+
+        presence_path = os.path.abspath(os.pardir)  # get the parent folder path. In this case is
+        # face_recognition_project
+        presence_path = presence_path + '\\face_recognition_project\\Validacao_de_Pessoas\\' + presence_list
 
         try:
             wb = xl.load_workbook(presence_path)
@@ -213,7 +212,8 @@ class Recog:
                     print("Align face failed")  # log
             if len(aligns) > 0:
                 features_arr = extract_feature.get_features(aligns)
-                recog_data, company = Recog.findPeople(features_arr, positions)  # receive people's coordinates and class
+                recog_data, company = Recog.findPeople(features_arr,
+                                                       positions)  # receive people's coordinates and class
                 workplace = company[0]
 
                 for (i, rect) in enumerate(rects):
@@ -252,12 +252,14 @@ class Recog:
                                 ws.cell(column=column + 4, row=row + 1, value=workplace)
                                 wb.save(presence_path)
 
-                            path = r'./imgs'
+                            path = os.path.abspath(os.pardir)  # get the parent folder path. In this case is
+                            # face_recognition_project
+                            path = path + '\\face_recognition_project\\Validacao_de_Pessoas\\imgs'
 
                             cv2.imwrite(os.path.join(path,
                                                      '%s' % result + '_' + '%s' % day + '_' + '%s' % month + '_' + '%s' % hour
                                                      + 'h' + '%s' % minutes + '.jpg'), frame)
-                            print(result, ' foi salvo em ', filename)
+                            print(result, ' foi salvo em ', presence_list)
                             frames = 1
 
                             welcome_msg = '\n' + 'Bem vindo, ' + result + '!'
@@ -302,8 +304,13 @@ class Recog:
         :param thres: distance threshold
         :return: person name and percentage
         '''
+        filename = 'coordinates.txt'
 
-        f = open(r'./coordinates.txt', 'r')
+        coordinates_path = os.path.abspath(os.pardir)  # get the parent folder path. In this case is
+        # face_recognition_project
+        coordinates_path = coordinates_path + '\\face_recognition_project\\Etapa_de_reconhecimento\\' + filename
+
+        f = open(coordinates_path, 'r')
         data_set = json.loads(f.read())
         returnRes = []
 

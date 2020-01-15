@@ -3,7 +3,6 @@ import os
 
 
 def return_path(original_path, file_name):
-
     try:
         base_path = sys._MEIPASS
     except:
