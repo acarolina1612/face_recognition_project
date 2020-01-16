@@ -70,7 +70,9 @@ class Recog:
         vs = cv2.VideoCapture(0)  # get input from webcam
         frames = 1
         time_recognized = datetime.now()
-        # persona = ""
+        persona = ''
+        person_and_time = [['', datetime.now()], ['', datetime.now()]]
+        count_people_found = 0
 
         while True:
 
@@ -110,7 +112,9 @@ class Recog:
 
             myPath = presence_path
 
-            if result != 'Desconhecido' and frames <= 5 and ((time_recognized + timedelta(seconds=10)) < datetime.now()):
+            if result != 'Desconhecido' and frames <= 5 and \
+                    (((time_recognized + timedelta(seconds=20)) < datetime.now()) or (person_and_time[0][0] != result
+                     and person_and_time[1][0] != result)):
                 for sh in xlrd.open_workbook(myPath).sheets():
                     if sh.name == day + '_' + month:  # when the search is in today's sheet, find the person
                         times_found, cell_found, column, row = Recog.findSpecificPerson(sh, result)
@@ -154,7 +158,18 @@ class Recog:
                             user_file.thread_file(welcome_msg, info, result)
 
                             time_recognized = datetime.now()
-                            result_time = (result, time_recognized)
+                            persona = result
+                            count_people_found += 1
+
+                            if count_people_found == 1 and person_and_time[0][0] != persona:
+                                person_and_time[0][0] = persona
+                                person_and_time[0][1] = time_recognized
+
+                            if count_people_found == 2 and person_and_time[1][0] != persona:
+                                person_and_time[1][0] = persona
+                                person_and_time[1][1] = time_recognized
+                                count_people_found = 0
+
                             result = 'Desconhecido'
 
                             continue
