@@ -114,7 +114,9 @@ class Recog:
 
             if result != 'Desconhecido' and frames <= 5 and \
                     (((time_recognized + timedelta(seconds=20)) < datetime.now()) or (person_and_time[0][0] != result
-                     and person_and_time[1][0] != result)):
+                     and person_and_time[1][0] != result)):  # if the person is on dataset and 5 frames of the same
+                # person is shown and the time she/he was recognized more than 20 seconds before or if there are 2 or
+                # more people in camera and they were not recognized yet, recognize them.
                 for sh in xlrd.open_workbook(myPath).sheets():
                     if sh.name == day + '_' + month:  # when the search is in today's sheet, find the person
                         times_found, cell_found, column, row = Recog.findSpecificPerson(sh, result)

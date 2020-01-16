@@ -7,6 +7,7 @@ import imutils
 import numpy as np
 import copy
 import cv2
+from win32api import GetSystemMetrics
 from tkinter import messagebox
 
 
@@ -82,6 +83,7 @@ class AddUser:
         except IOError:  # get the coordinates manually
 
             vs = cv2.VideoCapture(0)  # get input from webcam
+
             print(
                 "Por favor, comece a mexer a cabeça devagar. Aperte 'q' para salvar e "
                 "adicionar o novo usuário ao dataset.")
@@ -94,6 +96,14 @@ class AddUser:
                     if len(aligned_frame) == 160 and len(aligned_frame[0]) == 160:
                         person_imgs[pos].append(aligned_frame)
                         cv2.imshow("Adicionar usuário", aligned_frame)
+
+                        width = GetSystemMetrics(0)
+                        height = GetSystemMetrics(1)
+                        x = int((width / 2) - (80 / 2)) + 125
+                        y = int((height / 2) - (80 / 2)) - 25
+
+                        cv2.moveWindow("Adicionar usuário", x, y)
+
                 key = cv2.waitKey(1) & 0xFF
                 if key == ord("q"):
                     cv2.destroyAllWindows()
